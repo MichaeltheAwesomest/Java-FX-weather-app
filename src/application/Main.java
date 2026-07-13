@@ -47,7 +47,7 @@ public class Main extends Application {
 			Platform.runLater(()->{
 				taskLabel.setText("Got Ip information.\nGetting weather Information.");
 			});
-			weatherResponse = appIpClient.getWeatherResponse(ipInformation);
+			weatherResponse = appIpClient.getWeatherResponse(null,ipInformation);
 			Platform.runLater(()->{
 				taskLabel.setText("Done");
 			});

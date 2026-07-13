@@ -37,7 +37,11 @@ public class AppIpClient {
         }
     }
     
-    public WeatherResponse getWeatherResponse(IpInformation ipInfo) {
+    public String getWeatherResponse(IpInformation ipInfo) {
+    	return null;
+    }
+    
+    public WeatherResponse getWeatherResponse(HttpClient client, IpInformation ipInfo) {
     	return null;
     }
 }
