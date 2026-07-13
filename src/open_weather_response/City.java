@@ -3,7 +3,7 @@ package open_weather_response;
 public class City {
 	public int id;
 	public String name;
-	public Coord coord;
+	public Coordinate coord;
 	public String country;
 	public int population;
 	public int timezone;
