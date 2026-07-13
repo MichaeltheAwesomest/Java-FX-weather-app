@@ -1,0 +1,15 @@
+# Ignore Eclipse-specific metadata and local settings
+.metadata/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+
+# Ignore build directories
+target/
+build/
+
+# Keep your source code clean!
