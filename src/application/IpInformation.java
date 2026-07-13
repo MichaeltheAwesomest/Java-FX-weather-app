@@ -27,4 +27,7 @@ public class IpInformation {
 	Long country_population;
 	String asn;
 	String org;
+	public IpInformation() {
+		
+	}
 }
