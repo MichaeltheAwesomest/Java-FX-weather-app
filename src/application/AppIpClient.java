@@ -8,7 +8,9 @@ import java.net.http.HttpResponse;
 
 import com.google.gson.Gson;
 
-public class AppWebClient {
+import open_weather_response.WeatherResponse;
+
+public class AppIpClient {
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
@@ -33,5 +35,9 @@ public class AppWebClient {
             }
             return null;
         }
+    }
+    
+    public WeatherResponse getWeatherResponse(IpInformation ipInfo) {
+    	return null;
     }
 }
