@@ -38,8 +38,29 @@ public class AppIpClient {
     }
     
     public String getWeatherResponse(IpInformation ipInfo) {
-    	return null;
-    }
+            if (ipInfo == null || ipInfo.getLatitude() == null || ipInfo.getLongitude() == null) {
+                return "{\"error\": \"Missing latitude or longitude in IP information.\"}";
+            }
+            double lat = ipInfo.getLatitude();
+            double lon = ipInfo.getLongitude();
+            String url = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat 
+                       + "&lon=" + lon 
+                       + "&appid=" + apiKey 
+                       + "&units=metric";
+            try {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(url))
+                        .GET()
+                        .build();
+                HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                return response.body();
+            } catch (IOException | InterruptedException e) {
+                if (e instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                }
+                return "{\"error\": \"Failed to retrieve weather data: " + e.getMessage() + "\"}";
+            }
+        }
     
     public WeatherResponse getWeatherResponse(HttpClient client, IpInformation ipInfo) {
     	return null;
