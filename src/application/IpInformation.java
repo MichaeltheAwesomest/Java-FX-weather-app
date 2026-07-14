@@ -30,4 +30,12 @@ public class IpInformation {
 	public IpInformation() {
 		
 	}
+	
+	double getLatitude() {
+		return latitude;
+	}
+	
+	double getLongitude() {
+		return longitude;
+	}
 }

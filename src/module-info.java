@@ -5,4 +5,5 @@ module JavaFxWeatherDashBoardApp {
 	requires javafx.graphics;
 	
 	opens application to javafx.graphics, javafx.fxml,com.google.gson;
+	opens open_weather_response to com.google.gson;
 }

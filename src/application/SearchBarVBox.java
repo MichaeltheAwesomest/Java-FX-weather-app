@@ -10,18 +10,25 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 public class SearchBarVBox extends VBox {
+	private TextField searchTextField = new TextField();;
+
 	public SearchBarVBox() {
-		TextField searchTextField = new TextField();
 		searchTextField.setPromptText("Search for a city...");
 		HBox.setHgrow(searchTextField, Priority.ALWAYS);
-		
+
 		ObservableList<String> masterData = FXCollections.observableArrayList("Apple", "Banana", "Cherry", "Date",
 				"Elderberry", "Fig", "Grape");
 
 		FilteredList<String> filteredData = new FilteredList<>(masterData, _ -> false);
-		
+
 		final ListView<String> listView = new ListView<>();
+
+		listView.visibleProperty().addListener((_, _, newVal) -> {
+			listView.setManaged(newVal);
+		});
+
 		listView.setVisible(false);
+		listView.setManaged(false);
 
 		searchTextField.textProperty().addListener((_, _, newValue) -> {
 			filteredData.setPredicate(item -> {
@@ -31,18 +38,22 @@ public class SearchBarVBox extends VBox {
 				}
 
 				String lowerCaseFilter = newValue.toLowerCase();
-				if(item.toLowerCase().contains(lowerCaseFilter)) {
+				if (item.toLowerCase().contains(lowerCaseFilter)) {
 					listView.setVisible(true);
 					return true;
-				}else {
+				} else {
 					listView.setVisible(false);
 				}
 				return false;
 			});
 		});
-
-		
 		listView.setItems(filteredData);
-		super(10,searchTextField, listView);
+		setSpacing(10);
+		
+		getChildren().addAll(searchTextField, listView);
+	}
+
+	public TextField getTextField() {
+		return searchTextField;
 	}
 }

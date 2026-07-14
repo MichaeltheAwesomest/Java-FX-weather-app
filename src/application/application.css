@@ -1,1 +1,18 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.cityTimeGridTile {
+	-fx-background-color: grey;
+	-fx-background-radius: 20;
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 5);
+	-fx-text-fill: white;
+}
+
+.cityTimeGridTile .label {
+    -fx-text-fill: white;
+}
+
+.bigLabel {
+	-fx-font-size: 24;
+}
+
+#bigTemperatureLabel {
+	-fx-font-size: 20;
+}
