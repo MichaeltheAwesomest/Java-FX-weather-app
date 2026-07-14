@@ -51,4 +51,22 @@ public class AppApiClient {
 			return null;
 		}
 	}
+	
+	public WeatherResponse getWeatherResponse(String cityName) {
+		String apiKey = OpenWeatherApiKey.value;
+		String url ="https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&appid=" + apiKey
+				+ "&units=metric";
+		try {
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			Gson gson = new Gson();
+			WeatherResponse weatherResponse = gson.fromJson(response.body(), WeatherResponse.class);
+			return weatherResponse;
+		} catch (IOException | InterruptedException e) {
+			if (e instanceof InterruptedException) {
+				Thread.currentThread().interrupt();
+			}
+			return null;
+		}
+	}
 }
