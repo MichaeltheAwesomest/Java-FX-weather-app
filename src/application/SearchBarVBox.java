@@ -51,6 +51,8 @@ public class SearchBarVBox extends VBox {
 		setSpacing(10);
 		
 		getChildren().addAll(searchTextField, listView);
+		
+		HBox.setHgrow(this, Priority.ALWAYS);
 	}
 
 	public TextField getTextField() {

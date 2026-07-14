@@ -9,9 +9,11 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import open_weather_response.WeatherResponse;
 
 public class CityTimeGridVBox extends VBox {
-	public CityTimeGridVBox(String cityName) {
+	public CityTimeGridVBox(WeatherResponse weatherResponse) {
+		String cityName = weatherResponse.city.name;
 		Label cityNameLabel = new Label(cityName);
 		cityNameLabel.setTextAlignment(TextAlignment.CENTER);
 

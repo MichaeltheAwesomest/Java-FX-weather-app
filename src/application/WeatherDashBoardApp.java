@@ -1,6 +1,6 @@
 package application;
 
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 
 import javafx.application.Application;
@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
-import open_weather_response.Main;
 import open_weather_response.WeatherInformation;
 import open_weather_response.WeatherResponse;
 import javafx.scene.Scene;
@@ -19,12 +18,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -39,6 +35,7 @@ public class WeatherDashBoardApp extends Application {
 		Scene loadLocalWeatherDataScene = loadLocalWeatherDataScene();
 		primaryStage.setScene(loadLocalWeatherDataScene);
 		primaryStage.setTitle("Weather Dash Board App.");
+		primaryStage.setFullScreen(true);
 		primaryStage.show();
 	}
 
@@ -62,13 +59,30 @@ public class WeatherDashBoardApp extends Application {
 
 		Thread localWeatherInfoThread = new Thread(() -> {
 			IpInformation ipInformation = appIpClient.getIpInformation();
+			if(ipInformation==null) {
+				Platform.runLater(() -> {
+					taskLabel.setText("Couldn't get your IP adress information.\nPerhaps you have internet connection isussues");
+				});
+				return;
+			}
 			Platform.runLater(() -> {
-				taskLabel.setText("Got Ip information.\nGetting weather Information.");
+				taskLabel.setText("Got Ip Adress information.\nGetting weather Information at location.");
 			});
 			WeatherResponse weatherResponse = appIpClient.getWeatherResponse(ipInformation);
 			Platform.runLater(() -> {
-				taskLabel.setText("Done");
+				loadingSpinner.setProgress(1);
+				taskLabel.setText("Building Layout...");
+			});
+			
+			try {
+		        Thread.sleep(8);
+		    } catch (InterruptedException e) {
+		        e.printStackTrace();
+		    }
+			
+			Platform.runLater(()->{
 				primaryStage.setScene(weatherDataScene(weatherResponse));
+				primaryStage.setFullScreen(true);
 			});
 		});
 
@@ -83,71 +97,24 @@ public class WeatherDashBoardApp extends Application {
 
 		SearchBarVBox searchBar = new SearchBarVBox();
 
-		HBox.setHgrow(searchBar, Priority.ALWAYS);
-
 		HBox header = new HBox(30, darkModeToggle, searchBar, weatherAtLocationButton);
 
 		GridPane gridPane = new GridPane(20, 20);
 
-		String cityName = weatherResponse.city.name;
-
-		CityTimeGridVBox cityTimeGridTile = new CityTimeGridVBox(cityName);
-
-		Main currentMainWeather = weatherResponse.list.get(0).main;
-		double currentTemperature = currentMainWeather.temp;
-		Label currentTemperatureLabel = new Label(currentTemperature + "°C");
-		currentTemperatureLabel.setId("bigTemperatureLabel");
-		currentTemperatureLabel.setMaxWidth(Double.MAX_VALUE);
-		currentTemperatureLabel.setAlignment(Pos.CENTER);
-
-		double feelsLikeTemp = currentMainWeather.feels_like;
-		Label feelsLikeTempLabel = new Label("Feels like: " + feelsLikeTemp + "°C");
-		feelsLikeTempLabel.setMaxWidth(Double.MAX_VALUE);
-		feelsLikeTempLabel.setAlignment(Pos.CENTER);
-
-		VBox temperatureVBox = new VBox(currentTemperatureLabel, feelsLikeTempLabel);
-
-		ArrayList<WeatherInformation> weatherBroadCastList = weatherResponse.list;
-
-		String weatherName = weatherBroadCastList.get(0).weather.get(0).description;
-		Label weatherLabel = new Label(weatherName);
-		weatherLabel.setAlignment(Pos.CENTER);
-		weatherLabel.setMaxWidth(Double.MAX_VALUE);
-
-		String currentWeatherIconCode = weatherBroadCastList.get(0).weather.get(0).icon;
-		String currentWeatherImageUrl = "https://openweathermap.org/img/wn/" + currentWeatherIconCode + "@2x.png";
-		Image currentWeatherIcon = new Image(currentWeatherImageUrl);
-		ImageView currentWeatherIconView = new ImageView(currentWeatherIcon);
-
-		VBox weatherVBox = new VBox(10, currentWeatherIconView, weatherLabel);
-
-		HBox mainWeatherGridTile = new HBox(20, temperatureVBox, weatherVBox);
-		mainWeatherGridTile.getStyleClass().add("cityTimeGridTile");
-		mainWeatherGridTile.setPadding(new Insets(20));
-
-		Label dayForeCastLabel = new Label("5 days forecast");
-		dayForeCastLabel.setMaxWidth(Double.MAX_VALUE);
-		dayForeCastLabel.setTextAlignment(TextAlignment.CENTER);
+		CityTimeGridVBox cityTimeGridTile = new CityTimeGridVBox(weatherResponse);
+		CurrentWeatherGridTile currentWeatherGridTile = new CurrentWeatherGridTile(weatherResponse);
 		
-		VBox dayForeCastVBox = new VBox(10, dayForeCastLabel);
-		System.out.println(weatherBroadCastList.size());
-
-		for (int i = 7; i < weatherBroadCastList.size(); i += 8) {
-			WeatherInformation weatherBroadCast = weatherBroadCastList.get(i);
-			String weatherIconCode = weatherBroadCast.weather.get(0).icon;
-			String weatherIconUrl = "https://openweathermap.org/img/wn/" + weatherIconCode + "@2x.png";
-			Image weatherIcon = new Image(weatherIconUrl);
-			ImageView weatherIconView = new ImageView(weatherIcon);
-			double temp = weatherBroadCast.main.temp;
-			Label temperatureLabel = new Label(temp + "°C");
-
-			HBox broadCaseWeatherRow = new HBox(10, weatherIconView, temperatureLabel);
-			dayForeCastVBox.getChildren().add(broadCaseWeatherRow);
-
-		}
-
+		ArrayList<WeatherInformation> weatherBroadCastList = weatherResponse.list;
+		int cityTimeZoneOffsetInSeconds = weatherResponse.city.timezone;
+		ZoneOffset cityZoneOffset = ZoneOffset.ofTotalSeconds(cityTimeZoneOffsetInSeconds);
+		
+		DailyForeCastGridTile dailyForeCastGridTile = new DailyForeCastGridTile(weatherBroadCastList, cityZoneOffset);
+		HourlyForeCastGridTile hourlyForeCastGridTile = new HourlyForeCastGridTile(weatherBroadCastList, cityZoneOffset);
+		
 		gridPane.add(cityTimeGridTile, 0, 0);
-		gridPane.add(mainWeatherGridTile, 1, 0);
+		gridPane.add(currentWeatherGridTile, 1, 0);
+		gridPane.add(dailyForeCastGridTile, 0, 1);
+		gridPane.add(hourlyForeCastGridTile, 1, 1);
 		gridPane.setAlignment(Pos.CENTER);
 
 		BorderPane borderPane = new BorderPane();
@@ -155,6 +122,7 @@ public class WeatherDashBoardApp extends Application {
 		borderPane.setCenter(gridPane);
 
 		StackPane root = new StackPane(borderPane, header);
+		root.setPadding(new Insets(20));
 
 		Scene scene = new Scene(root, 400, 400);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());

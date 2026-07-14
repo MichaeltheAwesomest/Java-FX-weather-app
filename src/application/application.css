@@ -16,3 +16,18 @@
 #bigTemperatureLabel {
 	-fx-font-size: 20;
 }
+
+.mediumLabel{
+	-fx-font-size: 20;
+}
+
+#hourlyBroadCastColumn {
+	-fx-background-color: #2b2b2b;
+	-fx-background-radius: 10;
+	-fx-padding: 10;
+	-fx-text-fill: white;
+}
+
+#hourlyBroadCastColumn .label {
+    -fx-text-fill: white;
+}
