@@ -57,7 +57,7 @@ public class WeatherDashBoardApp extends Application {
 		Scene scene = new Scene(root, 400, 400);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
-		Thread localWeatherInfoThread = new Thread().ofVirtual().start(() -> {
+		Thread.ofVirtual().start(() -> {
 			IpInformation ipInformation = appIpClient.getIpInformation();
 			if (ipInformation == null) {
 				Platform.runLater(() -> {
@@ -76,7 +76,7 @@ public class WeatherDashBoardApp extends Application {
 			});
 
 			try {
-				Thread.sleep(9);
+				Thread.sleep(16);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -104,7 +104,7 @@ public class WeatherDashBoardApp extends Application {
 		Scene scene = new Scene(root, 400, 400);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
-		Thread localWeatherInfoThread = new Thread().ofVirtual().start(() -> {
+		Thread.ofVirtual().start(() -> {
 			WeatherResponse weatherResponse = appIpClient.getWeatherResponse(cityName);
 			Platform.runLater(() -> {
 				loadingSpinner.setProgress(1);
@@ -112,7 +112,7 @@ public class WeatherDashBoardApp extends Application {
 			});
 
 			try {
-				Thread.sleep(9);
+				Thread.sleep(16);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -127,16 +127,17 @@ public class WeatherDashBoardApp extends Application {
 
 	public Scene weatherDataScene(WeatherResponse weatherResponse) {
 		ToggleButton darkModeToggle = new ToggleButton("toggle mode");
+		darkModeToggle.getStyleClass().add("toggle-button");
 
 		Button weatherAtLocationButton = new Button("Current Location");
-		weatherAtLocationButton.setOnAction(_ -> {
-			primaryStage.setScene(loadLocalWeatherDataScene());
-		});
+		weatherAtLocationButton.getStyleClass().add("location-button");
 
 		SearchBarVBox searchBar = new SearchBarVBox();
+		searchBar.setMaxHeight(40);
 
-		HBox header = new HBox(30, darkModeToggle, searchBar, weatherAtLocationButton);
-
+		HBox header = new HBox(20, darkModeToggle, searchBar, weatherAtLocationButton);
+		header.setAlignment(Pos.TOP_CENTER);
+		
 		GridPane gridPane = new GridPane(20, 20);
 
 		int cityTimeZoneOffsetInSeconds = weatherResponse.city.timezone;
@@ -178,9 +179,21 @@ public class WeatherDashBoardApp extends Application {
 				alert.show();
 				return;
 			}
+			cityTimeGridTile.stopClock();
 			primaryStage.setScene(loadCityWeatherDataScene(textValue));
 			primaryStage.setFullScreen(true);
 		});
+		
+		weatherAtLocationButton.setOnAction(_ -> {
+			cityTimeGridTile.stopClock();
+			primaryStage.setScene(loadLocalWeatherDataScene());
+		});
+		
+		root.setOnMouseClicked(_ -> {
+	        if (!searchBar.getStyleClass().contains("focused-within")) {
+	            root.requestFocus(); 
+	        }
+	    });
 
 		return scene;
 	}
