@@ -57,11 +57,12 @@ public class WeatherDashBoardApp extends Application {
 		Scene scene = new Scene(root, 400, 400);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
-		Thread localWeatherInfoThread = new Thread(() -> {
+		Thread localWeatherInfoThread = new Thread().ofVirtual().start(() -> {
 			IpInformation ipInformation = appIpClient.getIpInformation();
-			if(ipInformation==null) {
+			if (ipInformation == null) {
 				Platform.runLater(() -> {
-					taskLabel.setText("Couldn't get your IP adress information.\nPerhaps you have internet connection isussues");
+					taskLabel.setText(
+							"Couldn't get your IP adress information.\nPerhaps you have internet connection isussues");
 				});
 				return;
 			}
@@ -73,20 +74,54 @@ public class WeatherDashBoardApp extends Application {
 				loadingSpinner.setProgress(1);
 				taskLabel.setText("Building Layout...");
 			});
-			
+
 			try {
-		        Thread.sleep(8);
-		    } catch (InterruptedException e) {
-		        e.printStackTrace();
-		    }
-			
-			Platform.runLater(()->{
+				Thread.sleep(9);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			Platform.runLater(() -> {
 				primaryStage.setScene(weatherDataScene(weatherResponse));
 				primaryStage.setFullScreen(true);
 			});
 		});
+		return scene;
+	}
 
-		localWeatherInfoThread.start();
+	public Scene loadCityWeatherDataScene(String cityName) {
+		ProgressIndicator loadingSpinner = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
+		loadingSpinner.setMaxSize(60, 60);
+		String formattedCityName = Character.toUpperCase(cityName.charAt(0)) + cityName.substring(1);
+		Label taskLabel = new Label("Getting " + formattedCityName + "'s weather Information.");
+		taskLabel.setTextAlignment(TextAlignment.CENTER);
+
+		VBox content = new VBox(10, loadingSpinner, taskLabel);
+		content.setAlignment(Pos.CENTER);
+
+		BorderPane root = new BorderPane();
+		root.setCenter(content);
+		Scene scene = new Scene(root, 400, 400);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+
+		Thread localWeatherInfoThread = new Thread().ofVirtual().start(() -> {
+			WeatherResponse weatherResponse = appIpClient.getWeatherResponse(cityName);
+			Platform.runLater(() -> {
+				loadingSpinner.setProgress(1);
+				taskLabel.setText("Building Layout...");
+			});
+
+			try {
+				Thread.sleep(9);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			Platform.runLater(() -> {
+				primaryStage.setScene(weatherDataScene(weatherResponse));
+				primaryStage.setFullScreen(true);
+			});
+		});
 		return scene;
 	}
 
@@ -94,6 +129,9 @@ public class WeatherDashBoardApp extends Application {
 		ToggleButton darkModeToggle = new ToggleButton("toggle mode");
 
 		Button weatherAtLocationButton = new Button("Current Location");
+		weatherAtLocationButton.setOnAction(_ -> {
+			primaryStage.setScene(loadLocalWeatherDataScene());
+		});
 
 		SearchBarVBox searchBar = new SearchBarVBox();
 
@@ -101,16 +139,18 @@ public class WeatherDashBoardApp extends Application {
 
 		GridPane gridPane = new GridPane(20, 20);
 
-		CityTimeGridVBox cityTimeGridTile = new CityTimeGridVBox(weatherResponse);
-		CurrentWeatherGridTile currentWeatherGridTile = new CurrentWeatherGridTile(weatherResponse);
-		
-		ArrayList<WeatherInformation> weatherBroadCastList = weatherResponse.list;
 		int cityTimeZoneOffsetInSeconds = weatherResponse.city.timezone;
 		ZoneOffset cityZoneOffset = ZoneOffset.ofTotalSeconds(cityTimeZoneOffsetInSeconds);
-		
+
+		CityTimeGridVBox cityTimeGridTile = new CityTimeGridVBox(weatherResponse, cityZoneOffset);
+		CurrentWeatherGridTile currentWeatherGridTile = new CurrentWeatherGridTile(weatherResponse);
+
+		ArrayList<WeatherInformation> weatherBroadCastList = weatherResponse.list;
+
 		DailyForeCastGridTile dailyForeCastGridTile = new DailyForeCastGridTile(weatherBroadCastList, cityZoneOffset);
-		HourlyForeCastGridTile hourlyForeCastGridTile = new HourlyForeCastGridTile(weatherBroadCastList, cityZoneOffset);
-		
+		HourlyForeCastGridTile hourlyForeCastGridTile = new HourlyForeCastGridTile(weatherBroadCastList,
+				cityZoneOffset);
+
 		gridPane.add(cityTimeGridTile, 0, 0);
 		gridPane.add(currentWeatherGridTile, 1, 0);
 		gridPane.add(dailyForeCastGridTile, 0, 1);
@@ -129,7 +169,7 @@ public class WeatherDashBoardApp extends Application {
 
 		TextField searchTextField = searchBar.getTextField();
 		searchTextField.setOnAction(_ -> {
-			String textValue = searchTextField.getText().toLowerCase();
+			String textValue = searchTextField.getText().toLowerCase().trim();
 			if (textValue.length() < 3) {
 				Alert alert = new Alert(AlertType.WARNING);
 				alert.setTitle("Input Validation");
@@ -138,7 +178,8 @@ public class WeatherDashBoardApp extends Application {
 				alert.show();
 				return;
 			}
-			weatherDataScene(null);
+			primaryStage.setScene(loadCityWeatherDataScene(textValue));
+			primaryStage.setFullScreen(true);
 		});
 
 		return scene;

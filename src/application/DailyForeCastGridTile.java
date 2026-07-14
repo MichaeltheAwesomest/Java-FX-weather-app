@@ -40,7 +40,7 @@ public class DailyForeCastGridTile extends VBox {
 
 			int absoluteTime = weatherBroadCast.dt;
 			LocalDateTime broadCastTime = LocalDateTime.ofEpochSecond(absoluteTime, 0, cityZoneOffset);
-			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm");
+			DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("EEEE, d MMMM");
 			String weatherTimeString = timeFormatter.format(broadCastTime);
 			Label weatherTimeLabel = new Label(weatherTimeString);
 

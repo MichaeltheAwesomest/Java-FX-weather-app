@@ -1,6 +1,7 @@
 package application;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import javafx.geometry.Insets;
@@ -12,12 +13,13 @@ import javafx.scene.text.TextAlignment;
 import open_weather_response.WeatherResponse;
 
 public class CityTimeGridVBox extends VBox {
-	public CityTimeGridVBox(WeatherResponse weatherResponse) {
+	public CityTimeGridVBox(WeatherResponse weatherResponse, ZoneOffset cityZoneOffset) {
 		String cityName = weatherResponse.city.name;
 		Label cityNameLabel = new Label(cityName);
 		cityNameLabel.setTextAlignment(TextAlignment.CENTER);
 
-		LocalDateTime currentTime = LocalDateTime.now();
+		int absoluteTime = weatherResponse.list.get(0).dt;
+		LocalDateTime currentTime = LocalDateTime.ofEpochSecond(absoluteTime, 0, cityZoneOffset);
 
 		DateTimeFormatter hourMinuteFormatter = DateTimeFormatter.ofPattern("H:mm");
 		String hourMinuteString = hourMinuteFormatter.format(currentTime);
