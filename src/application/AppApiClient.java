@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import open_weather_response.OpenWeatherApiKey;
 import open_weather_response.WeatherResponse;
 
-public class AppIpClient {
+public class AppApiClient {
 
 	private final HttpClient httpClient = HttpClient.newHttpClient();
 
