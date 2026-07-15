@@ -13,6 +13,7 @@ import open_weather_response.WeatherResponse;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
@@ -34,6 +35,9 @@ public class WeatherDashBoardApp extends Application {
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		primaryScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		String iconFilePath = getClass().getResource("icons/icon.png").toExternalForm();
+		Image iconImage = new Image(iconFilePath, 40, 40, true, true);
+		primaryStage.getIcons().add(iconImage);
 		primaryStage.setScene(primaryScene);
 		primaryStage.setTitle("Weather Dash Board App.");
 		primaryStage.setFullScreen(true);
