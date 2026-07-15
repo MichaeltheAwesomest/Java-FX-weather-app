@@ -7,6 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import open_weather_response.OpenWeatherApiKey;
 import open_weather_response.WeatherResponse;
@@ -52,7 +53,7 @@ public class AppApiClient {
 		}
 	}
 	
-	public WeatherResponse getWeatherResponse(String cityName) {
+	public WeatherResponse getWeatherResponse(String cityName) throws JsonSyntaxException,NumberFormatException {
 		String apiKey = OpenWeatherApiKey.value;
 		String url ="https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&appid=" + apiKey
 				+ "&units=metric";

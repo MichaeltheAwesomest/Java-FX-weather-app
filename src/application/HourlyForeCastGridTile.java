@@ -35,7 +35,7 @@ public class HourlyForeCastGridTile extends VBox {
 		String windAngleFilePath = getClass().getResource("icons/arrow.gif").toExternalForm();
 		Image windAngleImage = new Image(windAngleFilePath, 50, 50, true, true);
 
-		for (int i = 1; i < 8; i++) {
+		for (int i = 0; i < 7; i++) {
 			WeatherInformation weatherBroadCast = weatherBroadCastList.get(i);
 
 			int absoluteTime = weatherBroadCast.dt;
