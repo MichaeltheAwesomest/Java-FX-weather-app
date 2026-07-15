@@ -28,22 +28,24 @@ import javafx.scene.text.TextAlignment;
 public class WeatherDashBoardApp extends Application {
 	AppApiClient appIpClient = new AppApiClient();
 	Stage primaryStage;
+	Scene primaryScene=new Scene(new BorderPane());;
 
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		Scene loadLocalWeatherDataScene = loadLocalWeatherDataScene();
-		primaryStage.setScene(loadLocalWeatherDataScene);
+		primaryScene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		primaryStage.setScene(primaryScene);
 		primaryStage.setTitle("Weather Dash Board App.");
 		primaryStage.setFullScreen(true);
 		primaryStage.show();
+		loadLocalWeatherDataScene();
 	}
 
 	public static void main(String[] args) {
 		launch(args);
 	}
 
-	public Scene loadLocalWeatherDataScene() {
+	public void loadLocalWeatherDataScene() {
 		ProgressIndicator loadingSpinner = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
 		loadingSpinner.setMaxSize(60, 60);
 		Label taskLabel = new Label("Getting Ip information.");
@@ -54,8 +56,7 @@ public class WeatherDashBoardApp extends Application {
 
 		BorderPane root = new BorderPane();
 		root.setCenter(content);
-		Scene scene = new Scene(root, 400, 400);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		primaryStage.getScene().setRoot(root);
 
 		Thread.ofVirtual().start(() -> {
 			IpInformation ipInformation = appIpClient.getIpInformation();
@@ -82,14 +83,12 @@ public class WeatherDashBoardApp extends Application {
 			}
 
 			Platform.runLater(() -> {
-				primaryStage.setScene(weatherDataScene(weatherResponse));
-				primaryStage.setFullScreen(true);
+				weatherDataScene(weatherResponse);
 			});
 		});
-		return scene;
 	}
 
-	public Scene loadCityWeatherDataScene(String cityName) {
+	public void loadCityWeatherDataScene(String cityName) {
 		ProgressIndicator loadingSpinner = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
 		loadingSpinner.setMaxSize(60, 60);
 		String formattedCityName = Character.toUpperCase(cityName.charAt(0)) + cityName.substring(1);
@@ -101,8 +100,6 @@ public class WeatherDashBoardApp extends Application {
 
 		BorderPane root = new BorderPane();
 		root.setCenter(content);
-		Scene scene = new Scene(root, 400, 400);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 
 		Thread.ofVirtual().start(() -> {
 			WeatherResponse weatherResponse = appIpClient.getWeatherResponse(cityName);
@@ -118,14 +115,15 @@ public class WeatherDashBoardApp extends Application {
 			}
 
 			Platform.runLater(() -> {
-				primaryStage.setScene(weatherDataScene(weatherResponse));
+				weatherDataScene(weatherResponse);
 				primaryStage.setFullScreen(true);
 			});
 		});
-		return scene;
+		
+		primaryStage.getScene().setRoot(root);
 	}
 
-	public Scene weatherDataScene(WeatherResponse weatherResponse) {
+	public void weatherDataScene(WeatherResponse weatherResponse) {
 		ToggleButton darkModeToggle = new ToggleButton("toggle mode");
 		darkModeToggle.getStyleClass().add("toggle-button");
 
@@ -165,9 +163,6 @@ public class WeatherDashBoardApp extends Application {
 		StackPane root = new StackPane(borderPane, header);
 		root.setPadding(new Insets(20));
 
-		Scene scene = new Scene(root, 400, 400);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-
 		TextField searchTextField = searchBar.getTextField();
 		searchTextField.setOnAction(_ -> {
 			String textValue = searchTextField.getText().toLowerCase().trim();
@@ -180,13 +175,13 @@ public class WeatherDashBoardApp extends Application {
 				return;
 			}
 			cityTimeGridTile.stopClock();
-			primaryStage.setScene(loadCityWeatherDataScene(textValue));
+			loadCityWeatherDataScene(textValue);
 			primaryStage.setFullScreen(true);
 		});
 		
 		weatherAtLocationButton.setOnAction(_ -> {
 			cityTimeGridTile.stopClock();
-			primaryStage.setScene(loadLocalWeatherDataScene());
+			loadLocalWeatherDataScene();
 		});
 		
 		root.setOnMouseClicked(_ -> {
@@ -195,6 +190,6 @@ public class WeatherDashBoardApp extends Application {
 	        }
 	    });
 
-		return scene;
+		primaryStage.getScene().setRoot(root);
 	}
 }
