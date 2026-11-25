@@ -16,9 +16,10 @@ A lightweight desktop weather application built with **Java** and **JavaFX**, fe
 - **IDE / Build Config:** Eclipse (`build.fxbuild`, `.classpath`, `.project`)
 
 ## Screenshots / Demo
-<!-- Drag and drop your .mp4 clip or screenshot directly into the GitHub web editor here -->
+https://github.com/user-attachments/assets/82244097-7c5f-461e-8329-4ada63d004d0
 
 ## Running Locally
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/MichaeltheAwesomest/JavaFxWeatherDashBoardApp.git](https://github.com/MichaeltheAwesomest/JavaFxWeatherDashBoardApp.git)
+   git clone https://github.com/MichaeltheAwesomest/JavaFxWeatherDashBoardApp.git
+   ```
