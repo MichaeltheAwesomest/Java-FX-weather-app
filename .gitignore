@@ -11,8 +11,3 @@ local.properties
 # Ignore build directories
 target/
 build/
-
-# Ignore Class Containing Michael's API key
-src/open_weather_response/OpenWeatherApiKey.java
-
-# Keep your source code clean!
