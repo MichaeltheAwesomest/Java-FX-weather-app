@@ -36,7 +36,7 @@ public class AppApiClient {
 	public WeatherResponse getWeatherResponse(IpInformation ipInfo) {
 		double lat = ipInfo.getLatitude();
 		double lon = ipInfo.getLongitude();
-		String apiKey = OpenWeatherApiKey.value;
+		String apiKey = OpenWeatherApiKey.getValue();
 		String url = "https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey
 				+ "&units=metric";
 		try {
@@ -54,7 +54,7 @@ public class AppApiClient {
 	}
 	
 	public WeatherResponse getWeatherResponse(String cityName) throws JsonSyntaxException,NumberFormatException {
-		String apiKey = OpenWeatherApiKey.value;
+		String apiKey = OpenWeatherApiKey.getValue();
 		String url ="https://api.openweathermap.org/data/2.5/forecast?q=" + cityName + "&appid=" + apiKey
 				+ "&units=metric";
 		try {
